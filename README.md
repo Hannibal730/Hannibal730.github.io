@@ -1,25 +1,3 @@
----
-layout: post
-title: "Stealing Hyperparameters in Machine Learning"
-date: 2025-07-17
-author: 최대승 학부인턴
-meta: 건국대학교 응용통계학과
-description: "Model Stealing and Application 논문 세미나 자료"
-tags: lab-seminar hyperparameter-stealing MLaas
-categories: privacy
-related_posts: true
-toc:
-  beginning: true
----
-> 논문명: EModel Stealing and Application
-> 
-> 저자: Binghui Wang, Neil Zhenqiang Gong
-> 
-> 게재지: Symposium on Security and Privacy SP, San Francisco, CA, 2018. IEEE.
-> 
->URL:[Stealing Hyperparameters in Machine Learning](https://arxiv.org/abs/1802.05351)
-{: .block-warning }
-
 ## 서론
 <hr>
 
@@ -63,3 +41,28 @@ Representer theorem에 따르면 최적화된 모델 파라미터 $\mathbf{w}$�
 |-----| ---- | ---- |
 |**비커널**    | $\mathbf{w}$ | RR(Ridge Regression), LASSO, LR(Logistic Regression), SVM(Support Vector Machine)        |
 | **커널**     | $\mathbf{w} = \sum_i \alpha_i \phi(x_i)$ | KLR(Kernel Logistic Regression), KSVM(Kernel Support Vector) |
+
+
+#### 위협 모델 (Threat Model)
+
+공격 대상: Linear Regression, Kernel Regression, Linear Classification, Kernel Classfication, Neural networks
+
+공격자는 학습 데이터셋($X, y$), 학습 알고리즘, 그리고 주로 모델 파라미터($\mathbf{w}$ 또는 $\alpha$)를 알고 있다고 가정합니다. 
+
+만약 모델 파라미터가 알려지지 않은 경우, 기존 연구에서 제안된 모델 파라미터 도용 기법을 활용한다고 가정합니다.
+
+| 데이터셋 | 샘플 수 | 차원 | 유형 | 내용 |
+|---|---|---|---|--|
+|Diabetes|442|10|Regression|질병 진행 예측|
+|GeoOrig|1059|68|Regression|지리적 변수 예측|
+| UJIIndoor| 19937 | 529 | Regression |실내 위치 예측|
+|Iris|100|4|Classification|붓꽃 분류|
+|Madelon|4400|500|Classification| 이진 분류|
+|Bank|45210|16|Classification| 정기예금 가입 예측|
+
+
+#### 하이퍼파라미터 도용 메커니즘
+
+공격은 학습 데이터와 모델 파라미터 간의 수학적 관계를 활용합니다. 머신러닝 알고리즘의 목적 함수는 일반적으로 $ \text{Loss}(w) + \lambda \|w\|_p $ 형태로, 모델 파라미터는 기울기 $ \nabla (\text{Loss}(w) + \lambda \|w\|_p) = 0 $를 만족합니다. 이를 통해 $ \lambda $를 포함한 선형 방정식을 구성하고, 최소제곱법으로 하이퍼파라미터를 추정합니다.
+예: 리지 회귀에서는 $ X^T (y - Xw) = \lambda w $를 통해 $ \lambda $를 계산. 커널 알고리즘에서는 $ \alpha $를 사용해 유사한 방정식을 만듭니다.
+L1 정규화(LASSO 등)에서는 비미분 가능 지점($ w = 0 $)을 제외하고 추정하며, 다중 하이퍼파라미터(예: Elastic Net의 $ \lambda_1, \lambda_2 $)는 행렬 방정식으로 해결합니다.
