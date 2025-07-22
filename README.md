@@ -1,4 +1,4 @@
-[---
+---
 layout: post
 title: "Stealing Hyperparameters in Machine Learning"
 date: 2025-07-17
